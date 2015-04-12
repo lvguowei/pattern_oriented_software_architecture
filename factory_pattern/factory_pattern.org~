@@ -365,15 +365,8 @@ Press =C-c C-c= on the code block below.
 ;; export to pdf
 (org-latex-export-to-pdf)
 ;; build
-(shell-command-to-string "gradle jar")
+(shell-command-to-string "/opt/gradle-2.3/bin/gradle jar")
 #+END_SRC
 
 #+RESULTS:
-: :compileJava UP-TO-DATE
-: :processResources UP-TO-DATE
-: :classes UP-TO-DATE
-: :jar UP-TO-DATE
-: 
-: BUILD SUCCESSFUL
-: 
-: Total time: 3.167 secs
+: zsh:1: command not found: gradle

@@ -1,0 +1,197 @@
+#+TITLE: Factory Pattern
+#+AUTHOR: Guowei Lv
+#+OPTIONS: texht:t
+#+LATEX_CLASS: article
+#+LATEX_CLASS_OPTIONS:
+#+LATEX_HEADER_EXTRA:
+
+* Definition
+The Factory Method Pattern defines an interface for creating an object, but lets subclasses decide which class to instantiate. Factory Method lets a class defer instantiation to subclasses.
+
+* Example
+
+** The Creator classes
+
+This is our abstract creator class. It defines an abstract factory method that the subclasses implement to produce products.
+Often the creator contains code that depends on an abstract product, which is produced by a subclass. The creator never really knows which concrete product was produced.
+
+#+BEGIN_SRC java :tangle src/com/factory/PizzaStore.java :mkdirp yes :noweb yes
+  package com.factory;
+  public abstract class PizzaStore {
+      public Pizza orderPizza(String type) {
+          Pizza pizza;
+          pizza = createPizza(type);
+          pizza.prepare();
+          pizza.bake();
+          pizza.cut();
+          pizza.box();
+          return pizza;
+      }
+
+      abstract Pizza createPizza(String type);
+  }
+#+END_SRC
+
+Here are some concrete subclasses.
+Classes that produce products are called concrete creators. Since each franchise gets its own subclass of PizzaStore, it's free to create its own style of pizza by implementing createPizza().
+
+#+begin_src java :tangle src/com/factory/NYPizzaStore.java :mkdirp yes :noweb yes
+  package com.factory;
+  public class NYPizzaStore extends PizzaStore {
+    Pizza createPizza(String item) {
+      if (item.equals("cheese")) {
+        return new NYStyleCheesePizza();
+      } else {
+        return null;
+      }
+    }
+  }
+#+end_src
+
+#+begin_src java :tangle src/com/factory/ChicagoPizzaStore.java :mkdirp yes :noweb yes
+  package com.factory;
+  public class ChicagoPizzaStore extends PizzaStore {
+    Pizza createPizza(String item) {
+      if (item.equals("cheese")) {
+        return new ChicagoStyleCheesePizza();
+      } else {
+        return null;
+      }
+    }
+  }
+#+end_src
+
+The Product classes.
+#+begin_src java :tangle src/com/factory/Pizza.java :mkdirp yes :noweb yes
+  package com.factory;
+
+  import java.util.ArrayList;
+
+  public abstract class Pizza {
+    String name;
+    String dough;
+    String sauce;
+    ArrayList toppings = new ArrayList();
+
+    void prepare() {
+      System.out.println("Preparing " + name);
+      System.out.println("Tossing dough...");
+      System.out.println("Adding sauce...");
+      System.out.println("Adding toppings: ");
+      for (int i = 0; i < toppings.size(); i++) {
+        System.out.println("    " + toppings.get(i));
+      }
+    }
+
+    void bake() {
+      System.out.println("Bake for 25 minutes at 350");
+    }
+
+    void cut() {
+      System.out.println("Cutting the pizza into diagnal slices");
+    }
+
+    void box() {
+      System.out.println("Place pizza in official PizzaStore box");
+    }
+
+    public String getName() {
+      return name;
+    }
+  }
+#+end_src
+
+Now we just need some concrete Pizza class:
+
+#+begin_src java :tangle src/com/factory/NYStyleCheesePizza.java :mkdirp yes :noweb yes
+  package com.factory;
+  public class NYStyleCheesePizza extends Pizza {
+    public NYStyleCheesePizza() {
+      name = "NY Style Sauce and Cheese Pizza";
+      dough = "Thin Crust Dough";
+      sauce = "Marinara Sauce";
+
+      toppings.add("Grated Reggiano Cheese");
+    }
+  }
+#+end_src
+
+#+begin_src java :tangle src/com/factory/ChicagoStyleCheesePizza.java :mkdirp yes :noweb yes
+  package com.factory;
+  public class ChicagoStyleCheesePizza extends Pizza {
+    public ChicagoStyleCheesePizza() {
+      name = "Chicago Style Deep Dish Cheese Pizza";
+      dough = "Extra Thick Crust Dough";
+      sauce = "Plum Tomato Sauce";
+
+      toppings.add("Shredded Mozzarella Cheese");
+    }
+
+    void cut() {
+      System.out.println("Cutting the pizza into square slices");
+    }
+  }
+#+end_src
+
+The main class:
+
+#+begin_src java :tangle src/com/factory/Main.java :mkdirp yes
+  package com.factory;
+
+  public class Main {
+    public static void main(String[] args) {
+      PizzaStore nyStore = new NYPizzaStore();
+      PizzaStore chicagoStore = new ChicagoPizzaStore();
+
+      Pizza pizza = nyStore.orderPizza("cheese");
+      System.out.println("Ethan ordered a " + pizza.getName() + "\n");
+
+      pizza = chicagoStore.orderPizza("cheese");
+      System.out.println("Joel ordered a " + pizza.getName() + "\n");
+    }
+  }
+#+end_src
+
+* The Gradle Build Script
+#+BEGIN_SRC java :tangle build.gradle :exports none
+repositories {
+    mavenCentral()
+}
+
+apply plugin: "java"
+
+sourceSets {
+    main.java.srcDir "src"
+}
+
+jar {
+    manifest.attributes "Main-Class": "com.factory.Main"
+}
+
+#+END_SRC
+
+* How to run
+Press =C-c C-c= on the code block below.
+
+#+BEGIN_SRC elisp :exports none
+;; tangle the source code
+(org-babel-tangle)
+;; export to pdf
+(org-latex-export-to-pdf)
+;; build
+(shell-command-to-string "/opt/gradle-2.3/bin/gradle jar")
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+:compileJavaNote: Some input files use unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+
+:processResources UP-TO-DATE
+:classes
+:jar
+
+BUILD SUCCESSFUL
+
+Total time: 3.915 secs
+#+end_example
