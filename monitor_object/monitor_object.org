@@ -1,6 +1,11 @@
+#+BLOG: wordpress
+#+POSTID: 467
 #+DATE: <2015-02-01 Sun>
 #+TITLE: Monitor Object Pattern
 #+AUTHOR: Guowei Lv
+#+TAGS: programming, design pattern
+#+CATEGORY: programming
+#+POSTID: 467
 #+OPTIONS: texht:t
 #+LATEX_CLASS: article
 #+LATEX_CLASS_OPTIONS:
@@ -203,7 +208,7 @@ A MessageQueue monitor object defines three types of internal state:
 
 ** Implement all the monitor object's methods and data members.
 * The Gradle Build Script
-#+BEGIN_SRC java :tangle build.gradle :exports none
+#+BEGIN_SRC java :tangle build.gradle
 repositories {
     mavenCentral()
 }
@@ -359,7 +364,7 @@ class Consumer implements Runnable {
 * How to run
 Press =C-c C-c= on the code block below.
 
-#+BEGIN_SRC elisp :exports none
+#+BEGIN_SRC clojure
 ;; tangle the source code
 (org-babel-tangle)
 ;; export to pdf
